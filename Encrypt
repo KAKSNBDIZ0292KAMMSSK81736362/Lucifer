@@ -2157,6 +2157,7 @@ elseif license == "" or license:find("%s") or setting.infolic("C:\\Users\\" .. u
     print("Input ur valid license")
     getBot():stopScript()
 end
+::SUCK::
 if setting.num(9640) > 0 then
     ::SUCK::
     setting.joiningWorld(getBot().name,"")
