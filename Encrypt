@@ -7,6 +7,7 @@ for i, bot in pairs(getBots()) do
 end
 
 getBot().auto_reconnect = false
+getBot().legit_mode = false
 tilebreak = {}
 tileDirt = {}
 infoid = {}
@@ -19,7 +20,6 @@ local tileSeed = 0
 local tilePack = 0
 local tileEvent = 0
 local tileY = -1
-local param = 0
 local setting = {
     seed = 1,
     pack = 1,
@@ -27,7 +27,6 @@ local setting = {
     timechecker = os.time(),
     backup = 1,
     take = 1,
-    owner = false
 }
 seedX = dropseedX - 1
 seedY = dropseedY - 1
@@ -80,7 +79,7 @@ setting.wordsrandom = function()
     local idx = math.random(1, #random)
     local words = random[idx]
     getBot():say(words)
-    sleep(2000)
+    sleep(4000)
 end
 
 setting.tutorial = function()
@@ -105,7 +104,7 @@ setting.tutorial = function()
                                 removeBot()
                                 sleep(2000)
                                 setting.botinfo("Backup are enable, changing bot [ "..getBot().name.." ]")
-                                setting.backupacc(threads)
+                                setting.backupacc()
                             else
                                 if removingbot then
                                     removeBot()
@@ -116,7 +115,7 @@ setting.tutorial = function()
                         end
                     end
                     getBot():warp(idx)
-                    sleep(5000)
+                    sleep(delaywarp)
                 end
             end
         end
@@ -246,7 +245,7 @@ setting.writeFile = function(info,text)
     file:close()
 end
 
-setting.backupacc = function(threads)
+setting.backupacc = function()
     ::BACK::
     for i = setting.backup, #backups do
         thread = setting.split(backups[i],"([^"..symbol.."]+)")[1]
@@ -537,13 +536,13 @@ setting.goodtimes = function(estimates)
     end
 end
 
-setting.checkaccount = function(threads)
+setting.checkaccount = function()
     setting.botinfo("[ "..getBot().name.." ] has reached level limit, changing bot if bot switch are enable")
     if setting.num(seed) > 0 then
         setting.storingseeds(threads)
     end
     if backuplevel then
-        setting.backupacc(threads)
+        setting.backupacc()
     else        
         if removingbot then
             removeBot()
@@ -561,7 +560,7 @@ setting.webhookinfo = function()
                 username = "Debra's"
                 embeds = @(
                     @{
-                        title = "Rotation 0.1 [BOT STATIC]"
+                        title = "BOT STATICS"
                         color = "]]..math.random(111111,999999)..[["
                         fields = @(
                             @{
@@ -586,7 +585,7 @@ setting.webhookinfo = function()
                             }
                         )
                         footer = @{
-                            text = "[Lucifer] Caramoy's`nLast update : ]]..(os.date("!%a %b %d, %Y at %I:%M %p", os.time() + 7 * 60 * 60))..[["
+                            text = "[Lucifer v0.1] Caramoy's`nLast update : ]]..(os.date("!%a %b %d, %Y at %I:%M %p", os.time() + 7 * 60 * 60))..[["
                         }
                     }
                 )
@@ -608,7 +607,7 @@ setting.storageinfo = function()
                 username = "Debra's"
                 embeds = @(
                     @{
-                        title = "Rotation 0.1 [STORAGE STATIC]"
+                        title = "STORAGE STATICS"
                         color = "]]..math.random(111111,999999)..[["
                         fields = @(
                             @{
@@ -628,7 +627,7 @@ setting.storageinfo = function()
                             }
                         )
                         footer = @{
-                            text = "[Lucifer] Caramoy's`nLast update : ]]..(os.date("!%a %b %d, %Y at %I:%M %p", os.time() + 7 * 60 * 60))..[["
+                            text = "[Lucifer v1.0] Caramoy's`nLast update : ]]..(os.date("!%a %b %d, %Y at %I:%M %p", os.time() + 7 * 60 * 60))..[["
                         }
                     }
                 )
@@ -691,7 +690,7 @@ setting.reconnect = function(world,id,x,y)
                     removeBot()
                     sleep(2000)
                     setting.botinfo("Backup are enable, changing bot [ "..getBot().name.." ]")
-                    setting.backupacc(threads)
+                    setting.backupacc()
                 else
                     if removingbot then
                         removeBot()
@@ -767,7 +766,7 @@ setting.reconnect = function(world,id,x,y)
                         removeBot()
                         sleep(2000)
                         setting.botinfo("Backup are enable, changing bot [ "..getBot().name.." ]")
-                        setting.backupacc(threads)
+                        setting.backupacc()
                     else
                         if removingbot then
                             removeBot()
@@ -799,7 +798,7 @@ setting.reconnect = function(world,id,x,y)
     end
 end
 
-setting.buying = function(threads)
+setting.buying = function()
     print("["..indexbot.."]Buying packs")
     if getBot().gem_count >= mingems then
         if upbackpack then
@@ -876,7 +875,7 @@ setting.joiningWorld = function(world,door)
                         removeBot()
                         sleep(2000)
                         setting.botinfo("Backup are enable, changing bot [ "..getBot().name.." ]")
-                        setting.backupacc(threads)
+                        setting.backupacc()
                     else
                         if removingbot then
                             removeBot()
@@ -909,7 +908,7 @@ setting.joiningWorld = function(world,door)
                             removeBot()
                             sleep(2000)
                             setting.botinfo("Backup are enable, changing bot [ "..getBot().name.." ]")
-                            setting.backupacc(threads)
+                            setting.backupacc()
                         else
                             if removingbot then
                                 removeBot()
@@ -1271,7 +1270,7 @@ setting.storingevents = function(threads)
     end
 end
 
-setting.storingpacks = function(threads)
+setting.storingpacks = function()
     print("["..indexbot.."]Dropping packs")
     for i = setting.pack , #worldpack do
         ::Here::
@@ -1522,7 +1521,7 @@ setting.storingseeds = function(threads)
 end
 
 local network = math.random(5,95)
-setting.rotate = function(threads,static,blockid)
+setting.rotate = function(info,static,blockid)
     print("["..indexbot.."]Pnb")
     if not pnbother then
         ::BACK::
@@ -1537,28 +1536,28 @@ setting.rotate = function(threads,static,blockid)
                 if getTile(botX,botY + tileY).bg ~= 0 or getTile(botX, botY + tileY).fg ~= 0 then
                     setting.idx(0,tileY)
                     sleep(delaypunch)
-                    setting.reconnect(threads,static,botX,botY)
+                    setting.reconnect(info,static,botX,botY)
                 end
                 if getTile(botX,botY + tileY).bg == 0 or getTile(botX, botY + tileY).fg == 0 then
                     setting.dec(blockid,0,tileY)
                     sleep(delayplace)
-                    setting.reconnect(threads,static,botX,botY)
+                    setting.reconnect(info,static,botX,botY)
                 end
                 getBot():collect(2) 
                 sleep(30)
                 if getBot().level >= maxlevel and backuplevel then
-                    setting.checkaccount(threads)
+                    setting.checkaccount()
                     print("["..indexbot.."]Pnb")
-                    setting.joiningWorld(threads,static)
+                    setting.joiningWorld(info,static)
                     setting.webhookinfo()
                     setting.wordsrandom()
                     goto BACK
                 end
                 if getBot().gem_count >= mingems and buypack then
-                    setting.buying(threads)
-                    setting.storingpacks(threads)
+                    setting.buying()
+                    setting.storingpacks()
                     print("["..indexbot.."]Pnb")
-                    setting.joiningWorld(threads,static)
+                    setting.joiningWorld(info,static)
                     setting.webhookinfo()
                     setting.wordsrandom()
                     goto BACK
@@ -1571,7 +1570,7 @@ setting.rotate = function(threads,static,blockid)
                         if getTile(botX + i,botY + tileY).fg == 0 and getTile(botX + i,botY + tileY).bg == 0 then
                             setting.dec(blockid,i,tileY)
                             sleep(delayplace)
-                            setting.reconnect(threads,static,botX,botY)
+                            setting.reconnect(info,static,botX,botY)
                         end
                     end
                 end
@@ -1580,25 +1579,25 @@ setting.rotate = function(threads,static,blockid)
                         if getTile(botX + i,botY + tileY).fg ~= 0 or getTile(botX + i,botY + tileY).bg ~= 0 then
                             setting.idx(i,tileY)
                             sleep(delaypunch)
-                            setting.reconnect(threads,static,botX,botY)
+                            setting.reconnect(info,static,botX,botY)
                         end
                     end
                 end
                 getBot():collect(3) 
                 sleep(30)
                 if getBot().level >= maxlevel and backuplevel then
-                    setting.checkaccount(threads)
+                    setting.checkaccount()
                     print("["..indexbot.."]Pnb")
-                    setting.joiningWorld(threads,static)
+                    setting.joiningWorld(info,static)
                     setting.webhookinfo()
                     setting.wordsrandom()
                     goto BACK
                 end
                 if getBot().gem_count >= mingems and buypack then
-                    setting.buying(threads)
-                    setting.storingpacks(threads)
+                    setting.buying()
+                    setting.storingpacks()
                     print("["..indexbot.."]Pnb")
-                    setting.joiningWorld(threads,static)
+                    setting.joiningWorld(info,static)
                     setting.webhookinfo()
                     setting.wordsrandom()
                     goto BACK
@@ -1634,13 +1633,13 @@ setting.rotate = function(threads,static,blockid)
                         getBot():collect(2)
                         sleep(30)
                         if getBot().level >= maxlevel and backuplevel then
-                            setting.checkaccount(threads)
+                            setting.checkaccount()
                             print("["..indexbot.."]Pnb")
                             goto BACK
                         end
                         if getBot().gem_count >= mingems and buypack then
-                            setting.buying(threads)
-                            setting.storingpacks(threads)
+                            setting.buying()
+                            setting.storingpacks()
                             print("["..indexbot.."]Pnb")
                             goto BACK
                         end
@@ -1668,13 +1667,13 @@ setting.rotate = function(threads,static,blockid)
                         getBot():collect(3)
                         sleep(30)
                         if getBot().level >= maxlevel and backuplevel then
-                            setting.checkaccount(threads)
+                            setting.checkaccount()
                             print("["..indexbot.."]Pnb")
                             goto BACK
                         end
                         if getBot().gem_count >= mingems and buypack then
-                            setting.buying(threads)
-                            setting.storingpacks(threads)
+                            setting.buying()
+                            setting.storingpacks()
                             print("["..indexbot.."]Pnb")
                             goto BACK
                         end
@@ -1695,10 +1694,10 @@ setting.rotate = function(threads,static,blockid)
             goto BACK
         end
     end
-    setting.recycles(threads)
+    setting.recycles()
 end
 
-setting.recycles = function(threads)
+setting.recycles = function()
     for i , list in ipairs(trashList) do
         if setting.num(list) > amount then
             getBot():sendPacket(2,"action|trash\n|itemID|" .. list)
@@ -1718,7 +1717,6 @@ setting.rechecking = function(threads)
     for _, tile in pairs(getBot():getWorld():getTiles()) do
         if tile.fg == seed and tile:canHarvest() then
             setting.ident(tile.x,tile.y)
-            sleep(25)
             setting.reconnect(threads,doorfarm,tile.x,tile.y)
             if tile.fg == seed then
                 setting.idx(0,0)
@@ -1765,11 +1763,18 @@ setting.rechecking = function(threads)
                 setting.wordsrandom()
             else
                 setting.plant(threads,doorfarm,seed)
+                if setting.num(seed) >= amountseed then
+                    setting.storingseeds(threads)
+                    print("["..indexbot.."]Harvesting")
+                    setting.joiningWorld(threads,doorfarm)
+                    setting.webhookinfo()
+                    setting.wordsrandom()
+                end
                 goto BACK
             end
         elseif getBot().gem_count >= mingems and buypack then
-            setting.buying(threads)
-            setting.storingpacks(threads)
+            setting.buying()
+            setting.storingpacks()
             print("["..indexbot.."]Rechecking")
             setting.joiningWorld(threads,doorfarm)
             setting.webhookinfo()
@@ -1812,11 +1817,18 @@ setting.rechecking = function(threads)
                     setting.wordsrandom()
                 else
                     setting.plant(threads,doorfarm,seed)
+                    if setting.num(seed) >= amountseed then
+                        setting.storingseeds(threads)
+                        print("["..indexbot.."]Harvesting")
+                        setting.joiningWorld(threads,doorfarm)
+                        setting.webhookinfo()
+                        setting.wordsrandom()
+                    end
                     goto BACK
                 end
             elseif getBot().gem_count >= mingems and buypack then
-                setting.buying(threads)
-                setting.storingpacks(threads)
+                setting.buying()
+                setting.storingpacks()
                 print("["..indexbot.."]Rechecking")
                 setting.joiningWorld(threads,doorfarm)
                 setting.webhookinfo()
@@ -1824,41 +1836,18 @@ setting.rechecking = function(threads)
             end
         end
     end
-    for _, tile in pairs(getBot():getWorld():getTiles()) do
-        if tile.fg == block or tile.bg == block then
-            setting.ident(tile.x-1,tile.y)
-            setting.reconnect(threads,doorfarm,tile.x+1,tile.y)
-            while getTile(getBot().x+1,getBot().y).bg == block or getTile(getBot().x+1,getBot().y).fg == block do
-                setting.idx(1,0)
-                sleep(delaypunch)
-                setting.reconnect(threads,doorfarm,tile.x+1,tile.y)
-            end
-            getBot():collect(3)
-            sleep(30)
-        end
-    end
     if not dontplant then
         for _, tile in pairs(getBot():getWorld():getTiles()) do
-            if tile.fg == 0 and getTile(tile.x, tile.y).flags ~= 0 then
-                if setting.num(seed) == 0 then
-                    setting.takingseed(threads)
-                    print("["..indexbot.."]Rechecking")
-                    setting.joiningWorld(threads,doorfarm)
-                    setting.webhookinfo()
-                    setting.wordsrandom()
-                    if setting.num(seed) ~= 0 then 
-                        goto BACK
-                    else
-                        break
-                    end
-                end
+            if tile.fg == 0 and getTile(tile.x, tile.y).flags ~= 0 and setting.num(seed) ~= 0 then
                 setting.ident(tile.x,tile.y)
-                sleep(delayplant)
-                if getTile(tile.x,tile.y).fg ~= seed then
+                if tile.fg ~= seed then
                     setting.dec(seed,0,0)
                     sleep(delayplant)
                     setting.reconnect(threads,doorfarm,tile.x,tile.y)
                 end
+            end
+            if setting.num(seed) == 0 then
+                break
             end
         end
         if setting.num(seed) >= amountseed then
@@ -1871,7 +1860,7 @@ setting.rechecking = function(threads)
     end
 end
 
-setting.levelingcek = function(threads)
+setting.levelingcek = function(params)
     print("["..indexbot.."]Rechecking")
     if ignoregems then
         getBot().ignore_gems = true
@@ -1885,502 +1874,269 @@ setting.levelingcek = function(threads)
                 if not ignoregems then
                     getBot():collect(1)
                 end
-                setting.reconnect(threads,doorworldleveling,math.floor(obj.x / 32),math.floor(obj.y / 32))
+                setting.reconnect(params,doorworldleveling,math.floor(obj.x / 32),math.floor(obj.y / 32))
             end
             if setting.num(idblockleveling) > 180 then
                 if pnbother then
-                    setting.rotate(threads,doorworldleveling,idblockleveling)
+                    setting.rotate(params,doorworldleveling,idblockleveling)
                     print("["..indexbot.."]Rechecking")
-                    setting.joiningWorld(threads,doorworldleveling)
+                    setting.joiningWorld(params,doorworldleveling)
                     setting.webhookinfo()
                     setting.wordsrandom()
                 else
-                    setting.rotate(threads,doorworldleveling,idblockleveling)
+                    setting.rotate(params,doorworldleveling,idblockleveling)
                 end
             end
             if setting.num(eventList[1]) > amountevent then
-                setting.storingevents(threads)
+                setting.storingevents(params)
                 print("["..indexbot.."]Rechecking")
-                setting.joiningWorld(threads,doorworldleveling)
+                setting.joiningWorld(params,doorworldleveling)
                 setting.webhookinfo()
                 setting.wordsrandom()
             elseif setting.num(idblockleveling+1) >= amountseed then
-                setting.plant(threads,doorworldleveling,idblockleveling+1)
+                setting.plant(params,doorworldleveling,idblockleveling+1)
                 goto BACK
             elseif getBot().gem_count >= mingems and buypack then
-                setting.buying(threads)
-                setting.storingpacks(threads)
+                setting.buying()
+                setting.storingpacks()
                 print("["..indexbot.."]Rechecking")
-                setting.joiningWorld(threads,doorworldleveling)
+                setting.joiningWorld(params,doorworldleveling)
                 setting.webhookinfo()
                 setting.wordsrandom()
             end
-        end
-    end
-    for _, tile in pairs(getBot():getWorld():getTiles()) do
-        if tile.fg == idblockleveling or tile.bg == idblockleveling then
-            setting.ident(tile.x-1,tile.y)
-            setting.reconnect(threads,doorworldleveling,tile.x-1,tile.y)
-            while getTile(getBot().x+1,getBot().y).bg == idblockleveling or getTile(getBot().x+1,getBot().y).fg == idblockleveling do
-                setting.idx(1,0)
-                sleep(delaypunch)
-                setting.reconnect(threads,doorworldleveling,tile.x,tile.y)
-            end
-            getBot():collect(3)
-            sleep(30)
         end
     end
     for _, tile in pairs(getBot():getWorld():getTiles()) do
         if tile.fg == 0 and getTile(tile.x, tile.y).flags ~= 0 then
-            if setting.num(idblockleveling+1) == 0 then
-                break
-            end
             setting.ident(tile.x,tile.y)
-            sleep(delayplant)
-            if getTile(tile.x,tile.y).fg ~= idblockleveling+1 then
+            if tile.fg ~= idblockleveling+1 then
                 setting.dec(idblockleveling+1,0,0)
                 sleep(delayplant)
-                setting.reconnect(threads,doorworldleveling,tile.x,tile.y)
+                setting.reconnect(params,doorworldleveling,tile.x,tile.y)
             end
+        end
+        if setting.num(idblockleveling+1) == 0 then
+            break
         end
     end
     if setting.num(idblockleveling+1) >= amountseed then
-        setting.storingseeds(threads)
+        setting.storingseeds(params)
         print("["..indexbot.."]Rechecking")
-        setting.joiningWorld(threads,doorworldleveling)
+        setting.joiningWorld(params,doorworldleveling)
         setting.webhookinfo()
         setting.wordsrandom()
     end
 end
 
-setting.tileht = function(threads,static,seedid)
-    botX = getBot().x
-    botY = getBot().y
-    if getTile(botX - 2,botY).fg == seedid and getTile(botX - 2,botY):canHarvest() then
-        setting.idx(-2,0)
-        sleep(delayharvest)
-        setting.reconnect(threads,static,botX,botY)
-    end
-    sleep(delayharvest)
-    if getTile(botX - 1,botY).fg == seedid and getTile(botX - 1,botY):canHarvest() then
-        setting.idx(-1,0)
-        sleep(delayharvest)
-        setting.reconnect(threads,static,botX,botY)
-    end
-    sleep(delayharvest)
-    if getTile(botX,botY).fg == seedid and getTile(botX,botY):canHarvest() then
-        setting.idx(0,0)
-        sleep(delayharvest)
-        setting.reconnect(threads,static,botX,botY)
-    end
-    sleep(delayharvest)
-    if getTile(botX + 1,botY).fg == seedid and getTile(botX + 1,botY):canHarvest() then
-        setting.idx(1,0)
-        sleep(delayharvest)
-        setting.reconnect(threads,static,botX,botY)
-    end
-    sleep(delayharvest)
-    if getTile(botX + 2,botY).fg == seedid and getTile(botX + 2,botY):canHarvest() then
-        setting.idx(2,0)
-        sleep(delayharvest)
-        setting.reconnect(threads,static,botX,botY)
-    end
-    sleep(delayharvest)
-end
-
-setting.tilept = function(threads,static,seedid)
-    botX = getBot().x
-    botY = getBot().y
-    if getTile(botX - 2,botY).fg ~= seedid and getTile(botX - 2,botY + 1).fg ~= 0 and setting.num(seedid) ~= 0 then
-        setting.dec(seedid,-2,0)
-        sleep(delayplant)
-        setting.reconnect(threads,static,botX,botY)
-    end
-    sleep(delayplant)
-    if getTile(botX - 1,botY).fg ~= seedid and getTile(botX - 1,botY + 1).fg ~= 0 and setting.num(seedid) ~= 0 then
-        setting.dec(seedid,-1,0)
-        sleep(delayplant)
-        setting.reconnect(threads,static,botX,botY)
-    end
-    sleep(delayplant)
-    if getTile(botX,botY).fg ~= seedid and getTile(botX,botY + 1).fg ~= 0 and setting.num(seedid) ~= 0 then
-        setting.dec(seedid,0,0)
-        sleep(delayplant)
-        setting.reconnect(threads,static,botX,botY)
-    end
-    sleep(delayplant)
-    if getTile(botX + 1,botY).fg ~= seedid and getTile(botX + 1,botY + 1).fg ~= 0 and setting.num(seedid) ~= 0 then
-        setting.dec(seedid,1,0)
-        sleep(delayplant)
-        setting.reconnect(threads,static,botX,botY)
-    end
-    sleep(delayplant)
-    if getTile(botX + 2,botY).fg ~= seedid and getTile(botX + 2,botY + 1).fg ~= 0 and setting.num(seedid) ~= 0 then
-        setting.dec(seedid,2,0)
-        sleep(delayplant)
-        setting.reconnect(threads,static,botX,botY)
-    end
-    sleep(delayplant)
-end
-
-setting.tileht2 = function(threads,static,seedid)
-    botX = getBot().x
-    botY = getBot().y
-    while getTile(botX - 2,botY).fg == seedid and getTile(botX - 2,botY):canHarvest() do
-        setting.idx(-2,0)
-        sleep(delayharvest)
-        setting.reconnect(threads,static,botX,botY)
-    end
-    sleep(delayharvest)
-    while getTile(botX - 1,botY).fg == seedid and getTile(botX - 1,botY):canHarvest() do
-        setting.idx(-1,0)
-        sleep(delayharvest)
-        setting.reconnect(threads,static,botX,botY)
-    end
-    sleep(delayharvest)
-    while getTile(botX,botY).fg == seedid and getTile(botX,botY):canHarvest() do
-        setting.idx(0,0)
-        sleep(delayharvest)
-        setting.reconnect(threads,static,botX,botY)
-    end
-    sleep(delayharvest)
-    while getTile(botX + 1,botY).fg == seedid and getTile(botX + 1,botY):canHarvest() do
-        setting.idx(1,0)
-        sleep(delayharvest)
-        setting.reconnect(threads,static,botX,botY)
-    end
-    sleep(delayharvest)
-    while getTile(botX + 2,botY).fg == seedid and getTile(botX + 2,botY):canHarvest() do
-        setting.idx(2,0)
-        sleep(delayharvest)
-        setting.reconnect(threads,static,botX,botY)
-    end
-    sleep(delayharvest)
-end
-
-setting.tilept2 = function(threads,static,seedid)
-    botX = getBot().x
-    botY = getBot().y
-    while getTile(botX - 2,botY).fg ~= seedid and getTile(botX - 2,botY + 1).fg ~= 0 and setting.num(seedid) ~= 0 do
-        setting.dec(seedid,-2,0)
-        sleep(delayplant)
-        setting.reconnect(threads,static,botX,botY)
-    end
-    sleep(delayplant)
-    while getTile(botX - 1,botY).fg ~= seedid and getTile(botX - 1,botY + 1).fg ~= 0 and setting.num(seedid) ~= 0 do
-        setting.dec(seedid,-1,0)
-        sleep(delayplant)
-        setting.reconnect(threads,static,botX,botY)
-    end
-    sleep(delayplant)
-    while getTile(botX,botY).fg ~= seedid and getTile(botX,botY + 1).fg ~= 0 and setting.num(seedid) ~= 0 do
-        setting.dec(seedid,0,0)
-        sleep(delayplant)
-        setting.reconnect(threads,static,botX,botY)
-    end
-    sleep(delayplant)
-    while getTile(botX + 1,botY).fg ~= seedid and getTile(botX + 1,botY + 1).fg ~= 0 and setting.num(seedid) ~= 0 do
-        setting.dec(seedid,1,0)
-        sleep(delayplant)
-        setting.reconnect(threads,static,botX,botY)
-    end
-    sleep(delayplant)
-    while getTile(botX + 2,botY).fg ~= seedid and getTile(botX + 2,botY + 1).fg ~= 0 and setting.num(seedid) ~= 0 do
-        setting.dec(seedid,2,0)
-        sleep(delayplant)
-        setting.reconnect(threads,static,botX,botY)
-    end
-    sleep(delayplant)
-end
-
 setting.harvest = function(threads)
+    tileA = 99
+    tileB = 0
+    tileC = -1
+    tileD = 0
     print("["..indexbot.."]Harvesting")
     if ignoregems then
         getBot().ignore_gems = true
     end
     ::BACK::
-    for idx = 1,53 do
-        if getTile(97,idx).fg == seed and getTile(97,idx):canHarvest() then
-            setting.ident(97,idx)
-            sleep(delayharvest)
-            setting.reconnect(threads,doorfarm,97,idx)
-            if getTile(97,idx).fg == seed then
-                setting.tileht2(threads,doorfarm,seed)
-            end
-            if not ignoregems then
-                getBot():collect(range)
-            end
-            sleep(30)
-        end
-        if getBot().level >= maxlevel and backuplevel then
-            setting.checkaccount(threads)
-            print("["..indexbot.."]Harvesting")
-            setting.joiningWorld(threads,doorfarm)
-            setting.webhookinfo()
-            setting.wordsrandom()
-        end
-        if setting.num(block) > 180 then
-            if pnbother then
-                setting.rotate(threads,doorfarm,block)
-                print("["..indexbot.."]Harvesting")
-                setting.joiningWorld(threads,doorfarm)
-                setting.webhookinfo()
-                setting.wordsrandom()
-            else
-                setting.rotate(threads,doorfarm,block)
-            end
-        end
-        if setting.num(iditemtowear) == 0 then
-            if itemtowear then
-                setting.support()
-                print("["..indexbot.."]Harvesting")
-                setting.joiningWorld(threads,doorfarm)
-                setting.webhookinfo()
-                setting.wordsrandom()
-            end
-        end
-        if setting.num(eventList[1]) > amountevent then
-            setting.storingevents(threads)
-            print("["..indexbot.."]Harvesting")
-            setting.joiningWorld(threads,doorfarm)
-            setting.webhookinfo()
-            setting.wordsrandom()
-        elseif setting.num(seed) > amountseed then
-            if dontplant then
-                setting.storingseeds(threads)
-                print("["..indexbot.."]Harvesting")
-                setting.joiningWorld(threads,doorfarm)
-                setting.webhookinfo()
-                setting.wordsrandom()
-            else
-                setting.plant(threads,doorfarm,seed)
-                goto BACK
-            end
-        elseif getBot().gem_count >= mingems and buypack then
-            setting.buying(threads)
-            setting.storingpacks(threads)
-            print("["..indexbot.."]Harvesting")
-            setting.joiningWorld(threads,doorfarm)
-            setting.webhookinfo()
-            setting.wordsrandom()
-        end
-    end
-    for _, tile in pairs(getTiles()) do
-        if tile.fg == 6 then
-            if getTile(tile.x - 4, tile.y).fg == seed then
-                setting.ident(tile.x - 4,tile.y)
-                sleep(delayharvest)
-                setting.reconnect(threads,doorfarm,tile.x - 4,tile.y)
-                setting.tileht2(threads,doorfarm,seed)
+    for y = -1, 53 do
+        for x = tileA, tileB, tileC do
+            if getTile(x,y).fg == seed and getTile(x,y):canHarvest() then
+                if getBot().level >= maxlevel and backuplevel then
+                    setting.checkaccount()
+                    print("["..indexbot.."]Harvesting")
+                    setting.joiningWorld(threads,doorfarm)
+                    setting.webhookinfo()
+                    setting.wordsrandom()
+                end
+                if setting.num(block) > 180 then
+                    if pnbother then
+                        setting.rotate(threads,doorfarm,block)
+                        print("["..indexbot.."]Harvesting")
+                        setting.joiningWorld(threads,doorfarm)
+                        setting.webhookinfo()
+                        setting.wordsrandom()
+                    else
+                        setting.rotate(threads,doorfarm,block)
+                    end
+                end
+                if setting.num(iditemtowear) == 0 then
+                    if itemtowear then
+                        setting.support()
+                        print("["..indexbot.."]Harvesting")
+                        setting.joiningWorld(threads,doorfarm)
+                        setting.webhookinfo()
+                        setting.wordsrandom()
+                    end
+                end
+                if setting.num(eventList[1]) > amountevent then
+                    setting.storingevents(threads)
+                    print("["..indexbot.."]Harvesting")
+                    setting.joiningWorld(threads,doorfarm)
+                    setting.webhookinfo()
+                    setting.wordsrandom()
+                elseif setting.num(seed) > amountseed then
+                    if dontplant then
+                        setting.storingseeds(threads)
+                        print("["..indexbot.."]Harvesting")
+                        setting.joiningWorld(threads,doorfarm)
+                        setting.webhookinfo()
+                        setting.wordsrandom()
+                    else
+                        setting.plant(threads,doorfarm,seed)
+                        if setting.num(seed) >= amountseed then
+                            setting.storingseeds(threads)
+                            print("["..indexbot.."]Harvesting")
+                            setting.joiningWorld(threads,doorfarm)
+                            setting.webhookinfo()
+                            setting.wordsrandom()
+                        end
+                        goto BACK
+                    end
+                elseif getBot().gem_count >= mingems and buypack then
+                    setting.buying()
+                    setting.storingpacks()
+                    print("["..indexbot.."]Harvesting")
+                    setting.joiningWorld(threads,doorfarm)
+                    setting.webhookinfo()
+                    setting.wordsrandom()
+                end
+                setting.ident(x,y)
+                setting.reconnect(threads,doorfarm,x,y)
+                if getTile(x,y).fg == seed then
+                    setting.idx(0,0)
+                    sleep(delayharvest)
+                    setting.reconnect(threads,doorfarm,x,y)
+                end
                 if not ignoregems then
                     getBot():collect(range)
                 end
                 sleep(30)
             end
         end
-    end
-    for _, tile in pairs(getBot():getWorld():getTiles()) do
-        if getTile(tile.x,tile.y).fg == seed and getTile(tile.x,tile.y):canHarvest() then
-            setting.ident(tile.x+2,tile.y)
-            sleep(25)
-            setting.reconnect(threads,doorfarm,tile.x+2,tile.y)
-            if getTile(tile.x,tile.y).fg == seed then
-                setting.tileht(threads,doorfarm,seed)
+        if tileD == 1 then
+            if tileA == 0 then
+                tileA = 99
+                tileB = 0
+                tileC = -1
+                tileD = 0
+            elseif tileA == 99 then
+                tileA = 0
+                tileB = 99
+                tileC = 1
+                tileD = 0
             end
-            if not ignoregems then
-                getBot():collect(range)
-            end
-            sleep(30)
-        end
-        if getBot().level >= maxlevel and backuplevel then
-            setting.checkaccount(threads)
-            print("["..indexbot.."]Harvesting")
-            setting.joiningWorld(threads,doorfarm)
-            setting.webhookinfo()
-            setting.wordsrandom()
-        end
-        if setting.num(block) > 180 then
-            if pnbother then
-                setting.rotate(threads,doorfarm,block)
-                print("["..indexbot.."]Harvesting")
-                setting.joiningWorld(threads,doorfarm)
-                setting.webhookinfo()
-                setting.wordsrandom()
-            else
-                setting.rotate(threads,doorfarm,block)
-            end
-        end
-        if setting.num(iditemtowear) == 0 then
-            if itemtowear then
-                setting.support()
-                print("["..indexbot.."]Harvesting")
-                setting.joiningWorld(threads,doorfarm)
-                setting.webhookinfo()
-                setting.wordsrandom()
-            end
-        end
-        if setting.num(eventList[1]) > amountevent then
-            setting.storingevents(threads)
-            print("["..indexbot.."]Harvesting")
-            setting.joiningWorld(threads,doorfarm)
-            setting.webhookinfo()
-            setting.wordsrandom()
-        elseif setting.num(seed) > amountseed then
-            if dontplant then
-                setting.storingseeds(threads)
-                print("["..indexbot.."]Harvesting")
-                setting.joiningWorld(threads,doorfarm)
-                setting.webhookinfo()
-                setting.wordsrandom()
-            else
-                setting.plant(threads,doorfarm,seed)
-                goto BACK
-            end
-        elseif getBot().gem_count >= mingems and buypack then
-            setting.buying(threads)
-            setting.storingpacks(threads)
-            print("["..indexbot.."]Harvesting")
-            setting.joiningWorld(threads,doorfarm)
-            setting.webhookinfo()
-            setting.wordsrandom()
+        elseif tileD == 0 then
+            tileD = tileD + 1
         end
     end
 end
 
-setting.levelings = function(threads)
+setting.levelings = function(params)
+    tileA = 99
+    tileB = 0
+    tileC = -1
+    tileD = 0
     print("["..indexbot.."]Levelings")
     if ignoregems then
         getBot().ignore_gems = true
     end
     ::BACK::
-    for idx = 1,53 do
-        if getTile(97,idx).fg == idblockleveling+1 and getTile(97,idx):canHarvest() then
-            setting.ident(97,idx)
-            sleep(delayharvest)
-            setting.reconnect(threads,doorworldleveling,97,idx)
-            if getTile(97,idx).fg == idblockleveling+1 then
-                setting.tileht2(threads,doorworldleveling,idblockleveling+1)
-            end
-            if not ignoregems then
-                getBot():collect(range)
-            end
-            sleep(30)
-        end
-        if getBot().level >= setminlvl then
-            break
-        end
-        if setting.num(idblockleveling) > 180 then
-            if pnbother then
-                setting.rotate(threads,doorworldleveling,idblockleveling)
-                print("["..indexbot.."]Levelings")
-                setting.joiningWorld(threads,doorworldleveling)
-                setting.webhookinfo()
-                setting.wordsrandom()
-            else
-                setting.rotate(threads,doorworldleveling,idblockleveling)
-            end
-            goto BACK
-        end
-        if setting.num(idblockleveling+1) > amountseed then
-            setting.plant(threads,doorworldleveling,idblockleveling+1)
-            goto BACK
-        end
-    end
-    for _, tile in pairs(getTiles()) do
-        if tile.fg == 6 then
-            if getTile(tile.x - 4, tile.y).fg == idblockleveling+1 then
-                setting.ident(tile.x - 4,tile.y)
-                sleep(delayharvest)
-                setting.reconnect(threads,doorworldleveling,tile.x - 4,tile.y)
-                setting.tileht2(threads,doorworldleveling,idblockleveling+1)
+    for y = -1, 53 do
+        for x = tileA, tileB, tileC do
+            if getTile(x,y).fg == idblockleveling+1 and getTile(x,y):canHarvest() then
+                if getBot().level >= setminlvl then
+                    break
+                end
+                if setting.num(idblockleveling) > 180 then
+                    if pnbother then
+                        setting.rotate(params,doorworldleveling,idblockleveling)
+                        print("["..indexbot.."]Levelings")
+                        setting.joiningWorld(params,doorworldleveling)
+                        setting.webhookinfo()
+                        setting.wordsrandom()
+                    else
+                        setting.rotate(params,doorworldleveling,idblockleveling)
+                    end
+                    goto BACK
+                end
+                if setting.num(idblockleveling+1) > amountseed then
+                    setting.plant(params,doorworldleveling,idblockleveling+1)
+                    goto BACK
+                elseif getBot().gem_count >= mingems and buypack then
+                    setting.buying()
+                    setting.storingpacks()
+                    print("["..indexbot.."]Levelings")
+                    setting.joiningWorld(params,doorworldleveling)
+                    setting.webhookinfo()
+                    setting.wordsrandom()
+                    goto BACK
+                end
+                setting.ident(x,y)
+                setting.reconnect(params,doorworldleveling,x,y)
+                if getTile(x,y).fg == idblockleveling+1 then
+                    if getTile(x,y).fg == idblockleveling+1 then
+                        setting.idx(0,0)
+                        sleep(delayharvest)
+                        setting.reconnect(params,doorworldleveling,x,y)
+                    end
+                end
                 if not ignoregems then
                     getBot():collect(range)
                 end
                 sleep(30)
             end
         end
-    end
-    for _, tile in pairs(getBot():getWorld():getTiles()) do
-        if getTile(tile.x,tile.y).fg == idblockleveling+1 and getTile(tile.x,tile.y):canHarvest() then
-            setting.ident(tile.x+2,tile.y)
-            sleep(25)
-            setting.reconnect(threads,doorworldleveling,tile.x+2,tile.y)
-            if getTile(tile.x,tile.y).fg == idblockleveling+1 then
-                setting.tileht(threads,doorworldleveling,idblockleveling+1)
+        if tileD == 1 then
+            if tileA == 0 then
+                tileA = 99
+                tileB = 0
+                tileC = -1
+                tileD = 0
+            elseif tileA == 99 then
+                tileA = 0
+                tileB = 99
+                tileC = 1
+                tileD = 0
             end
-            if not ignoregems then
-                getBot():collect(range)
-            end
-            sleep(30)
-        end
-        if getBot().level >= setminlvl then
-            break
-        end
-        if setting.num(idblockleveling) > 180 then
-            if pnbother then
-                setting.rotate(threads,doorworldleveling,idblockleveling)
-                print("["..indexbot.."]Levelings")
-                setting.joiningWorld(threads,doorworldleveling)
-                setting.webhookinfo()
-                setting.wordsrandom()
-            else
-                setting.rotate(threads,doorworldleveling,idblockleveling)
-            end
-            goto BACK
-        end
-        if setting.num(idblockleveling+1) > amountseed then
-            setting.plant(threads,doorworldleveling,idblockleveling+1)
-            goto BACK
-        elseif getBot().gem_count >= mingems and buypack then
-            setting.buying(threads)
-            setting.storingpacks(threads)
-            print("["..indexbot.."]Levelings")
-            setting.joiningWorld(threads,doorworldleveling)
-            setting.webhookinfo()
-            setting.wordsrandom()
-            goto BACK
+        elseif tileD == 0 then
+            tileD = tileD + 1
         end
     end
 end
 
-setting.plant = function(threads,static,seedid)
+setting.plant = function(info,static,seedid)
+    tileA = 99
+    tileB = 0
+    tileC = -1
+    tileD = 0
     print("["..indexbot.."]Planting")
-    for idx = 1,53 do
-        if getTile(97,idx).fg == 0 and getTile(97,idx).flags ~= 0 and setting.num(seedid) ~= 0 then
-            setting.ident(97,idx)
-            sleep(delayplant)
-            setting.reconnect(threads,static,97,idx)
-            if getTile(97,idx).fg ~= seedid then
-                setting.tilept2(threads,static,seedid)
+    for y = -1, 53 do
+        for x = tileA, tileB, tileC do
+            if getTile(x,y).fg == 0 and getTile(x,y).flags ~= 0 and setting.num(seedid) ~= 0 then
+                setting.ident(x,y)
+                setting.reconnect(info,static,x,y)
+                if getTile(x,y).fg ~= seedid then
+                    setting.dec(seedid,0,0)
+                    sleep(delayplant)
+                    setting.reconnect(info,static,x,y)
+                end
             end
         end
-    end
-    for _, tile in pairs(getTiles()) do
-        if tile.fg == 6 then
-            if getTile(tile.x - 4, tile.y).fg ~= seedid then
-                setting.ident(tile.x - 4,tile.y)
-                sleep(delayplant)
-                setting.reconnect(threads,static,tile.x - 4,tile.y)
-                setting.tilept2(threads,static,seedid)
+        if tileD == 1 then
+            if tileA == 0 then
+                tileA = 99
+                tileB = 0
+                tileC = -1
+                tileD = 0
+            elseif tileA == 99 then
+                tileA = 0
+                tileB = 99
+                tileC = 1
+                tileD = 0
             end
+        elseif tileD == 0 then
+            tileD = tileD + 1
         end
-    end
-    for _, tile in pairs(getBot():getWorld():getTiles()) do
-        if getTile(tile.x,tile.y).fg == 0 and getTile(tile.x,tile.y).flags ~= 0 and setting.num(seedid) ~= 0 then
-            setting.ident(tile.x+2,tile.y)
-            sleep(25)
-            setting.reconnect(threads,static,tile.x+2,tile.y)
-            if tile.fg ~= seedid then
-                setting.tilept(threads,static,seedid)
-            end
-        end
-    end
-    if setting.num(seedid) >= amountseed then
-        setting.storingseeds(threads)
-        print("["..indexbot.."]Harvesting")
-        setting.joiningWorld(threads,static)
-        setting.webhookinfo()
-        setting.wordsrandom()
     end
 end
 
@@ -2532,7 +2288,6 @@ while true do
         ::Rets::
         setting.storageinfo()
         setting.joiningWorld(value,doorfarm)
-        setting.wordsrandom()
         setting.webhookinfo()
         if not subserver then
             if not nuked then
@@ -2573,6 +2328,7 @@ while true do
             goto Rets
         end
     end
+    sleep(3000)
     if not looping then
         if setting.num(seed) > 0 then
             setting.storingseeds(threads)
