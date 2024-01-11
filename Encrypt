@@ -12,7 +12,6 @@ tilebreak = {}
 tileDirt = {}
 infoid = {}
 worlds = {}
-backups = {}
 index = 1
 strings = ""
 local tileBlock = 0
@@ -25,8 +24,7 @@ local setting = {
     pack = 1,
     event = 1,
     timechecker = os.time(),
-    backup = 1,
-    take = 1,
+    take = 1
 }
 seedX = dropseedX - 1
 seedY = dropseedY - 1
@@ -100,12 +98,7 @@ setting.tutorial = function()
                         getBot():connect()
                         sleep(delayreconnect)
                         if getBot().status == BotStatus.account_banned then
-                            if backupwhensuspend then
-                                removeBot()
-                                sleep(2000)
-                                setting.botinfo("Backup are enable, changing bot [ "..getBot().name.." ]")
-                                setting.backupacc()
-                            else
+                            if not botBackup then
                                 if removingbot then
                                     removeBot()
                                     sleep(2000)
@@ -148,7 +141,6 @@ setting.generate = function()
     end
     return generate
 end
-local trx = setting.generate()
 
 setting.split = function(str, ptr)
     if not ptr then 
@@ -163,10 +155,6 @@ end
 
 for i =  1,farmperbot do
     table.insert(worlds,worldfarm[math.floor((indexbot - 1) * farmperbot + i)])
-end
-
-for i = 1,backupPerbot do
-    table.insert(backups,backupList[math.floor((indexbot - 1) * backupPerbot + i)])
 end
 
 for x = math.floor(pnbtile/2),1,-1 do
@@ -245,140 +233,29 @@ setting.writeFile = function(info,text)
     file:close()
 end
 
-setting.backupacc = function()
-    ::BACK::
-    for i = setting.backup, #backups do
-        thread = setting.split(backups[i],"([^"..symbol.."]+)")[1]
-        threading = setting.split(backups[i],"([^"..symbol.."]+)")[2]
-        num = setting.split(backups[i],"([^"..symbol.."]+)")[3] or ""
-        if typeaccount == "guest" then
-            if macposition == "left" then
-                getBot():updateBot(""..trx.."",thread,threading)
-            elseif macposition == "right" then
-                getBot():updateBot(""..trx.."",threading,thread)
-            end
-        elseif typeaccount == "normal" then
-            getBot():updateBot(thread,threading)
-            sleep(8000)
-        end
-        sleep(8000)
-        setting.botinfo("Changing bot to : [ "..getBot().name.." ]")
-        getBot().auto_reconnect = false
-        if typeaccount == "normal" then
-            while getBot().status ~= BotStatus.online do
-                getBot():connect()
-                sleep(delayreconnect)
-                if getBot().status == BotStatus.account_banned or getBot().status == BotStatus.advanced_account_protection then
-                    setting.botinfo("Failed switch bot to : [ "..getBot().name.." ] status is "..setting.getEnetBot()..", Removing bots @everyone")
-                    setting.writeFile("botbackupstatus","[ "..getBot().name.." ] status is "..setting.getEnetBot().."")
-                    removeBot()
-                    sleep(2000)
-                    setting.backup = setting.backup + 1
-                    if setting.backup > #backups then
-                        print("["..indexbot.."]No more bots to switch, sc terminated")
-                        setting.botinfo("No more bots to switch, sc terminated @everyone")
-                        if removingbot then
-                            removeBot()
-                            sleep(2000)
-                        end
-                        getBot():stopScript()
+setting.switchup = function()
+    if botBackup then
+        if indexbot == 1 then
+            for i = 1, #backupList do
+                thread = setting.split(backupList[i],"([^"..symbol.."]+)")[1]
+                threading = setting.split(backupList[i],"([^"..symbol.."]+)")[2]
+                if typeaccount == "normal" then
+                    setting.writeFile("BotSwitch",thread.."|"..threading)
+                elseif typeaccount == "guest" then
+                    if macposition == "left" then
+                        setting.writeFile("BotSwitch",setting.generate().."|"..threading.."|"..thread)
+                    elseif macposition == "right" then
+                        setting.writeFile("BotSwitch",setting.generate().."|"..thread.."|"..threading)
                     end
-                    sleep(2000)
-                    goto BACK
-                end
-            end
-            if getBot().status == BotStatus.online and getBot().level < maxlevel then
-                if proxy then
-                    setting.botinfo("Success switch bot to : [ "..getBot().name.." ], proxy : "..getProxy().."")
-                else
-                    setting.botinfo("Success switch bot to : [ "..getBot().name.." ]")
-                end
-                break
-            elseif getBot().status == BotStatus.online and getBot().level >= maxlevel then
-                if proxy then
-                    setting.botinfo("Failed switch bot to : [ "..getBot().name.." ], proxy : "..getProxy()..", this bot has reached max level, rechecking ur backup bot list")
-                else
-                    setting.botinfo("Failed switch bot to : [ "..getBot().name.." ], this bot has reached max level, rechecking ur backup bot list")
-                end
-                removeBot()
-                sleep(2000)
-                setting.backup = setting.backup + 1
-                if setting.backup > #backups then
-                    print("["..indexbot.."]No more bots to switch, sc terminated")
-                    setting.botinfo("No more bots to switch, sc terminated @everyone")
-                    if removingbot then
-                        removeBot()
-                        sleep(2000)
-                    end
-                    getBot():stopScript()
-                end
-            end
-        elseif typeaccount == "guest" then
-            while getBot().status ~= BotStatus.online do
-                getBot():connect()
-                sleep(delayreconnect)
-                if getBot().status == BotStatus.account_banned or getBot().status == BotStatus.captcha_status then
-                    setting.botinfo("Bot backup : [ "..getBot():getLogin().mac..""..symbol..""..getBot():getLogin().rid.." ] status is "..setting.getEnetBot()..", Terminated script @everyone")
-                    setting.writeFile("botbackupstatus","[ "..getBot():getLogin().mac..""..symbol..""..getBot():getLogin().rid.." ] status is "..setting.getEnetBot().."")
-                    removeBot()
-                    sleep(2000)
-                    setting.backup = setting.backup + 1
-                    if setting.backup > #backups then
-                        print("["..indexbot.."]No more bots to switch, sc terminated")
-                        setting.botinfo("No more bots to switch, sc terminated @everyone")
-                        if removingbot then
-                            removeBot()
-                            sleep(2000)
-                        end
-                        getBot():stopScript()
-                    end
-                    goto BACK
-                end
-            end
-            if getBot().status == BotStatus.online and getBot().level < maxlevel then
-                if proxy then
-                    setting.botinfo("Success add bot to : [ "..getBot():getLogin().mac..""..symbol..""..getBot():getLogin().rid.." ], proxy : "..getBot().proxy.."")
-                else
-                    setting.botinfo("Success add bot to : [ "..getBot():getLogin().mac..""..symbol..""..getBot():getLogin().rid.." ]")
-                end
-                break
-            elseif getBot().status == BotStatus.online and getBot().level >= maxlevel then
-                if proxy then
-                    setting.botinfo("Failed switch bot to : [ "..getBot():getLogin().mac..""..symbol..""..getBot():getLogin().rid.." ], proxy : "..getProxy()..", this bot has reached max level, rechecking ur backup bot list")
-                else
-                    setting.botinfo("Failed switch bot to : [ "..getBot():getLogin().mac..""..symbol..""..getBot():getLogin().rid.." ], this bot has reached max level, rechecking ur backup bot list")
-                end
-                removeBot()
-                sleep(2000)
-                setting.backup = setting.backup + 1
-                if setting.backup > #backups then
-                    print("["..indexbot.."]No more bots to switch, sc terminated")
-                    setting.botinfo("No more bots to switch, sc terminated @everyone")
-                    if removingbot then
-                        removeBot()
-                        sleep(2000)
-                    end
-                    getBot():stopScript()
                 end
             end
         end
     end
-    if setting.num(9640) > 0 then
-        ::SUCK::
-        setting.joiningWorld(getBot().name,"")
-        setting.wordsrandom()
-        while getTile(getBot().x,getBot().y - 1).fg ~= 9640 do
-            setting.dec(9640,0,-1)
-            sleep(delayplace)
+    if proxy then
+        for _, list in ipairs(proxyList) do
+            addProxy(list)
+            getProxyManager():setLimit(proxyPerBot)
         end
-        if setting.num(9640) > 0 then
-            goto SUCK
-        end
-    end
-    ::Check::
-    if setting.num(98) == 0 and pickaxe and getBot().status == BotStatus.online then
-        setting.takepickaxe()
-        goto Check
     end
 end
 
@@ -536,22 +413,6 @@ setting.goodtimes = function(estimates)
     end
 end
 
-setting.checkaccount = function()
-    setting.botinfo("[ "..getBot().name.." ] has reached level limit, changing bot if bot switch are enable")
-    if setting.num(seed) > 0 then
-        setting.storingseeds(threads)
-    end
-    if backuplevel then
-        setting.backupacc()
-    else        
-        if removingbot then
-            removeBot()
-            sleep(2000)
-        end
-        getBot():stopScript()
-    end
-end
-
 setting.webhookinfo = function()
 	if botinfo then
         local text = [[
@@ -686,12 +547,7 @@ setting.reconnect = function(world,id,x,y)
             sleep(delayreconnect)
             if getBot().status == BotStatus.account_banned then
                 setting.botinfo("[ "..getBot().name.." ] status is "..setting.getEnetBot()..", removing bot @everyone")
-                if backupwhensuspend then
-                    removeBot()
-                    sleep(2000)
-                    setting.botinfo("Backup are enable, changing bot [ "..getBot().name.." ]")
-                    setting.backupacc()
-                else
+                if not botBackup then
                     if removingbot then
                         removeBot()
                         sleep(2000)
@@ -762,12 +618,7 @@ setting.reconnect = function(world,id,x,y)
                 sleep(delayreconnect)
                 if getBot().status == BotStatus.account_banned then
                     setting.botinfo("[ "..getBot().name.." ] status is "..setting.getEnetBot()..", removing bot @everyone")
-                    if backupwhensuspend then
-                        removeBot()
-                        sleep(2000)
-                        setting.botinfo("Backup are enable, changing bot [ "..getBot().name.." ]")
-                        setting.backupacc()
-                    else
+                    if not botBackup then
                         if removingbot then
                             removeBot()
                             sleep(2000)
@@ -871,12 +722,7 @@ setting.joiningWorld = function(world,door)
                 getBot():connect()
                 sleep(delayreconnect)
                 if getBot().status == BotStatus.account_banned then
-                    if backupwhensuspend then
-                        removeBot()
-                        sleep(2000)
-                        setting.botinfo("Backup are enable, changing bot [ "..getBot().name.." ]")
-                        setting.backupacc()
-                    else
+                    if not botBackup then
                         if removingbot then
                             removeBot()
                             sleep(2000)
@@ -904,12 +750,7 @@ setting.joiningWorld = function(world,door)
                     getBot():connect()
                     sleep(delayreconnect)
                     if getBot().status == BotStatus.account_banned then
-                        if backupwhensuspend then
-                            removeBot()
-                            sleep(2000)
-                            setting.botinfo("Backup are enable, changing bot [ "..getBot().name.." ]")
-                            setting.backupacc()
-                        else
+                        if not botBackup then
                             if removingbot then
                                 removeBot()
                                 sleep(2000)
@@ -1545,14 +1386,6 @@ setting.rotate = function(info,static,blockid)
                 end
                 getBot():collect(2) 
                 sleep(30)
-                if getBot().level >= maxlevel and backuplevel then
-                    setting.checkaccount()
-                    print("["..indexbot.."]Pnb")
-                    setting.joiningWorld(info,static)
-                    setting.webhookinfo()
-                    setting.wordsrandom()
-                    goto BACK
-                end
                 if getBot().gem_count >= mingems and buypack then
                     setting.buying()
                     setting.storingpacks()
@@ -1585,14 +1418,6 @@ setting.rotate = function(info,static,blockid)
                 end
                 getBot():collect(3) 
                 sleep(30)
-                if getBot().level >= maxlevel and backuplevel then
-                    setting.checkaccount()
-                    print("["..indexbot.."]Pnb")
-                    setting.joiningWorld(info,static)
-                    setting.webhookinfo()
-                    setting.wordsrandom()
-                    goto BACK
-                end
                 if getBot().gem_count >= mingems and buypack then
                     setting.buying()
                     setting.storingpacks()
@@ -1632,11 +1457,6 @@ setting.rotate = function(info,static,blockid)
                         end
                         getBot():collect(2)
                         sleep(30)
-                        if getBot().level >= maxlevel and backuplevel then
-                            setting.checkaccount()
-                            print("["..indexbot.."]Pnb")
-                            goto BACK
-                        end
                         if getBot().gem_count >= mingems and buypack then
                             setting.buying()
                             setting.storingpacks()
@@ -1666,11 +1486,6 @@ setting.rotate = function(info,static,blockid)
                         end
                         getBot():collect(3)
                         sleep(30)
-                        if getBot().level >= maxlevel and backuplevel then
-                            setting.checkaccount()
-                            print("["..indexbot.."]Pnb")
-                            goto BACK
-                        end
                         if getBot().gem_count >= mingems and buypack then
                             setting.buying()
                             setting.storingpacks()
@@ -1941,13 +1756,6 @@ setting.harvest = function(threads)
     for y = -1, 53 do
         for x = tileA, tileB, tileC do
             if getTile(x,y).fg == seed and getTile(x,y):canHarvest() then
-                if getBot().level >= maxlevel and backuplevel then
-                    setting.checkaccount()
-                    print("["..indexbot.."]Harvesting")
-                    setting.joiningWorld(threads,doorfarm)
-                    setting.webhookinfo()
-                    setting.wordsrandom()
-                end
                 if setting.num(block) > 180 then
                     if pnbother then
                         setting.rotate(threads,doorfarm,block)
@@ -2200,6 +2008,7 @@ elseif license == "" or license:find("%s") or setting.infolic("C:\\Users\\" .. u
     print("Input ur valid license")
     getBot():stopScript()
 end
+setting.switchup()
 if setting.num(9640) > 0 then
     ::SUCK::
     setting.joiningWorld(getBot().name,"")
